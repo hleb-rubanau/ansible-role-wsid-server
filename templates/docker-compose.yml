@@ -12,6 +12,6 @@ services:
     image: nginx:latest
     restart: unless-stopped
     network_mode: host
-    entrypoint: ["/usr/sbin/usermod", "-u", "{{ wsid_proxy_uid }}", "nginx" ]
+    entrypoint: "/usr/sbin/usermod -u {{ wsid_proxy_uid }} nginx ; exec $$* ; " 
     volumes:
       - ./local_proxy.conf:/etc/nginx/conf.d/default.conf:ro
