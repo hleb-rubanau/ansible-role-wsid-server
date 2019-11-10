@@ -43,7 +43,7 @@
     ip_version: "{{ item[1] }}"
     protocol: "{{ item[2] }}"
     comment: "allow {{ item[0] }} to connect to WSID locally"
-  loop: "{{ wsid_allowed_users | product(['ipv4','ipv6']) | product(['tcp','udp'] ) | list }}"
+  loop: "{{ wsid_allowed_users | product(['ipv4','ipv6']) | product(['tcp','udp'] ) | map('flatten') | list }}"
   register: wsid_iptables_whitelist
 - name: iptables-block
   iptables:
@@ -53,7 +53,7 @@
     ip_version: "{{ item[0] }}"
     protocol: "{{ item[1] }}"
     comment: "disallow connections to WSID unless whitelisted before"
-  loop: "{{ ['ipv4','ipv6'] | product(['tcp','udp']) | flatten(levels=1) }}"
+  loop: "{{ ['ipv4','ipv6'] | product(['tcp','udp']) | list }}"
   register: wsid_iptables_blacklist
 - name: iptables-save
   shell: "{{ item.0 }} > /etc/iptables/rules.{{ item.1 }}"
