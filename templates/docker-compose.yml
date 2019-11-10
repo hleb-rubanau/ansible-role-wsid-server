@@ -1,6 +1,6 @@
 version: "3"
 services:
-  nginx:
+  wsid:
     image: hleb/wsid-server:latest
     restart: unless-stopped
     network_mode: host
@@ -8,3 +8,10 @@ services:
       - GUNICORN_PORT={{ wsid_port }}
       - LOG_LEVEL={{ wsid_log_level }} 
       - WSID_IDENTITY={{ wsid_identity_url }}
+  wsid_proxy:
+    image: nginx:latest
+    restart: unless-stopped
+    network_mode: host
+    entrypoint: ["/usr/sbin/usermod", "-u", "{{ wsid_proxy_uid }}", "nginx" ]
+    volumes:
+      - ./local_proxy.conf:/etc/nginx/conf.d/default.conf:ro

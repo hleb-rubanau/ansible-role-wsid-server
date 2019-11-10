@@ -12,18 +12,26 @@
   file:
     path: "{{ wsid_install_dir }}"
     state: directory
-- name: compose file
+- user:
+    name: "{{ wsid_proxy_user }}"
+    system: yes
+    create_home: no
+    password_lock: yes
+    shell: /bin/false
+- name: discover wsid proxy uid
+  command: id -u {{ wsid_proxy_user | quote}}
+  register: wsid_proxy_user_lookup
+- set_fact:
+    wsid_proxy_uid: "{{ wsid_proxy_user_lookup.stdout | trim }}"
+- name: configs 
   template:
-    src: docker-compose.yml
-    dest: "{{ wsid_install_dir }}/docker-compose.yml"
+    src: "{{ item }}"
+    dest: "{{ wsid_install_dir }}/{{ item }}"
+  loop: "[ 'docker-compose.yml', 'nginx_sample.conf', 'local_proxy.conf' ]"
 - name: wsid service
   docker_compose:
     project_src: "{{ wsid_install_dir }}"
     remove_orphans: yes
-- name: sample config
-  template:
-    src: nginx_sample.conf
-    dest: "{{ wsid_install_dir }}/nginx_sample.conf"
 - name: iptables-whitelist
   iptables:
     chain: INPUT

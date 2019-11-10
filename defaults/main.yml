@@ -2,4 +2,6 @@
 wsid_install_dir: /opt/wsid-server
 wsid_log_level: DEBUG
 wsid_port: 23199
-wsid_allowed_users: [ 'root', 'www-data' ]
+wsid_proxy_port: 23200
+wsid_proxy_user: wsid_proxy
+wsid_allowed_users: [ 'root', 'wsid_proxy' ]
