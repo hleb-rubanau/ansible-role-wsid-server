@@ -7,6 +7,7 @@
     name:
       - python-docker
       - docker-compose
+      - iptables-persistent
 - name: project_directory
   file:
     path: "{{ wsid_install_dir }}"
@@ -19,3 +20,35 @@
   docker_compose:
     project_src: "{{ wsid_install_dir }}"
     remove_orphans: yes
+- name: sample config
+  template:
+    src: nginx_sample.conf
+    dest: "{{ wsid_install_dir }}/nginx_sample.conf"
+- name: iptables-whitelist
+  iptables:
+    chain: INPUT
+    jump: ACCEPT
+    in_interface: lo
+    out_interface: lo
+    destination_port: "{{ wsid_port }}"  
+    uid_owner: "{{ item[0] }}"
+    ip_version: "{{ item[1] }}"
+    protocol: "{{ item[2] }}"
+    comment: "allow {{ item[0] }} to connect to WSID locally"
+  loop: "{{ wsid_allowed_users | product(['ipv4','ipv6']) | product(['tcp','udp'] ) | list }}"
+  register: wsid_iptables_whitelist
+- name: iptables-block
+  iptables:
+    chain: INPUT
+    jump: DROP
+    destination_port: "{{ wsid_port }}"  
+    ip_version: "{{ item[0] }}"
+    protocol: "{{ item[1] }}"
+    comment: "disallow connections to WSID unless whitelisted before"
+  loop: "{{ ['ipv4','ipv6'] | product(['tcp','udp']) | flatten(levels=1) }}"
+  register: wsid_iptables_blacklist
+- name: iptables-save
+  shell: "{{ item.0 }} > /etc/iptables/rules.{{ item.1 }}"
+  loop: "{{ ['iptables-save','iptables6-save'] | zip( ['v4','v6'] ) | list }}"
+  when: wsid_iptables_whitelist.changed or wsid_iptables_blacklist.changed
+  
