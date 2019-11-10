@@ -1,0 +1,21 @@
+---
+- set_fact:
+    wsid_identity_path: "{{ wsid_identity_url.split('/')[3:] | join('/') }}" 
+    wsid_identity_host: "{{ wsid_identity_url.split('/')[2] }}"
+- name: dependencies
+  apt:
+    name:
+      - python-docker
+      - docker-compose
+- name: project_directory
+  file:
+    path: "{{ wsid_install_dir }}"
+    state: directory
+- name: compose file
+  template:
+    src: docker-compose.yml
+    dest: "{{ wsid_install_dir }}/docker-compose.yml"
+- name: wsid service
+  docker_compose:
+    project_src: "{{ wsid_install_dir }}"
+    remove_orphans: yes

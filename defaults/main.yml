@@ -1,0 +1,5 @@
+---
+wsid_install_dir: /opt/wsid-server
+wsid_log_level: DEBUG
+wsid_port: 23199
+wsid_allowed_users: [ 'root', 'www-data' ]

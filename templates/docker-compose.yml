@@ -1,0 +1,10 @@
+version: "3"
+services:
+  nginx:
+    image: hleb/wsid-server:latest
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - GUNICORN_PORT={{ wsid_port }}
+      - LOG_LEVEL={{ wsid_log_level }} 
+      - WSID_IDENTITY={{ wsid_identity_url }}

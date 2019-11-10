@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: wsid-server
+  author: Hleb Rubanau
+  description: Dockerized WSID server
+  license: MIT
+  min_ansible_version: 2.1
+  galaxy_tags:
+    - docker
+    - wsid
+    - authorization
+    - authentication
+  dependencies: []
+dependencies:
+  - docker # e.g. https://github.com/hleb-rubanau/ansible-role-docker
