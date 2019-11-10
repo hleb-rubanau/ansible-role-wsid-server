@@ -27,7 +27,7 @@
   template:
     src: "{{ item }}"
     dest: "{{ wsid_install_dir }}/{{ item }}"
-  loop: "[ 'docker-compose.yml', 'nginx_sample.conf', 'local_proxy.conf' ]"
+  loop: "{{ [ 'docker-compose.yml', 'nginx_sample.conf', 'local_proxy.conf' ] }}"
 - name: wsid service
   docker_compose:
     project_src: "{{ wsid_install_dir }}"
